@@ -20,7 +20,7 @@ module.exports = function (grunt) {
         copy: {
             main: {
                 files: [
-                    {expand: true, src: ['<%= srcDir %>/**'], dest: '<%= webDir %>'}
+                    {expand: true, src: ['<%= srcDir %>/**', '!<%= srcDir %>/sass/**'], dest: '<%= webDir %>'}
                 ]
             }
         },
@@ -28,9 +28,6 @@ module.exports = function (grunt) {
         clean: {
             build: {
                 src: ['<%= targetDir %>/**']
-            },
-            sass: {
-                src: ['<%= targetDir %>/sass']
             }
         },
 
