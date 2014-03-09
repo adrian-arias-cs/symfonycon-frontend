@@ -13,21 +13,29 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         // setup some variables that we'll use below
-        srcDir: 'assets',
+        rootAssetsDir: 'assets',
         webDir: 'web',
-        targetDir: '<%= webDir %>/<%= srcDir %>',
+        targetAssetsDir: '<%= webDir %>/assets',
 
         copy: {
             main: {
                 files: [
-                    {expand: true, src: ['<%= srcDir %>/**', '!<%= srcDir %>/sass/**'], dest: '<%= webDir %>'}
+                    // copy /assets to /web/assets (but don't copy the SASS source files, not needed!)
+                    {
+                        expand: true,
+                        src: [
+                            '<%= rootAssetsDir %>/**',
+                            '!<%= rootAssetsDir %>/sass/**'
+                        ],
+                        dest: '<%= webDir %>'
+                    }
                 ]
             }
         },
 
         clean: {
             build: {
-                src: ['<%= targetDir %>/**']
+                src: ['<%= targetAssetsDir %>/**']
             }
         },
 
@@ -37,10 +45,10 @@ module.exports = function (grunt) {
             // files or configuration
             main: {
                 options: {
-                    mainConfigFile: '<%= targetDir %>/js/common.js',
-                    appDir: '<%= srcDir %>',
+                    mainConfigFile: '<%= targetAssetsDir %>/js/common.js',
+                    appDir: '<%= rootAssetsDir %>',
                     baseUrl: './js',
-                    dir: '<%= targetDir %>',
+                    dir: '<%= targetAssetsDir %>',
                     // will be taken care of with compass
                     optimizeCss: "none",
                     // will be taken care of with an uglify task directly
@@ -108,9 +116,9 @@ module.exports = function (grunt) {
                     jsFilePaths.forEach(function(val) {
                         files.push({
                             expand: true,
-                            cwd: '<%= targetDir %>',
+                            cwd: '<%= targetAssetsDir %>',
                             src: val,
-                            dest: '<%= targetDir %>'
+                            dest: '<%= targetAssetsDir %>'
                         });
                     });
 
@@ -126,7 +134,7 @@ module.exports = function (grunt) {
             },
             all: [
                 'Gruntfile.js',
-                '<%= targetDir %>/js/{,*/}*.js'
+                '<%= targetAssetsDir %>/js/{,*/}*.js'
             ]
         },
 
@@ -135,7 +143,8 @@ module.exports = function (grunt) {
             // the "production" build subtask (grunt compass:dist)
             dist: {
                 options: {
-                    config: '<%= srcDir %>/../config.rb',
+                    // SASS and CSS paths are defined in the config
+                    config: '<%= rootAssetsDir %>/../config.rb',
                     environment: 'production',
                     outputStyle: 'compressed'
                 }
@@ -143,7 +152,8 @@ module.exports = function (grunt) {
             // the "development" build subtask (grunt compass:dev)
             dev: {
                 options: {
-                    config: '<%= srcDir %>/../config.rb',
+                    // SASS and CSS paths are defined in the config
+                    config: '<%= rootAssetsDir %>/../config.rb',
                     outputStyle: 'expanded'
                 }
             }
@@ -153,7 +163,7 @@ module.exports = function (grunt) {
         watch: {
             // watch all JS files and run jshint
             scripts: {
-                files: ['<%= srcDir %>/js/**'],
+                files: ['<%= rootAssetsDir %>/js/**'],
                 tasks: ['copy', 'jshint'],
                 options: {
                     spawn: false
@@ -161,7 +171,7 @@ module.exports = function (grunt) {
             },
             // watch all .scss files and run compass
             compass: {
-                files: '<%= srcDir %>/sass/*.scss',
+                files: '<%= rootAssetsDir %>/sass/*.scss',
                 tasks: ['copy', 'compass:dev'],
                 options: {
                     spawn: false
